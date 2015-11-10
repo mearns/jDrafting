@@ -6,6 +6,8 @@ repositories {
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'com.jamesmurty.utils:java-xmlbuilder:1.1'
+
     testCompile 'junit:junit:4.12'
 }
 
