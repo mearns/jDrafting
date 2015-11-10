@@ -1,8 +1,11 @@
 package com.brianmearns.jDrafting.render;
 
-import com.brianmearns.jDrafting.Style;
-import com.brianmearns.contracts.Reflexive;
 import com.brianmearns.contracts.Endomorphic;
+import com.brianmearns.contracts.Reflexive;
+import com.brianmearns.jDrafting.Style;
+import org.jetbrains.annotations.Nullable;
+
+import javax.validation.constraints.NotNull;
 
 public interface Renderer {
 
@@ -20,7 +23,7 @@ public interface Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer circle(@Nullable Style style, double center_x, double center_y, double_radius);
+    public Renderer circle(@Nullable Style style, double center_x, double center_y, double radius);
 
     @NotNull
     @Reflexive
@@ -66,7 +69,7 @@ public interface Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer text(@Nullable Style, double x, double y, @NotNull String text);
+    public Renderer text(@Nullable Style style, double x, double y, @NotNull String text);
 
 }
 

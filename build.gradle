@@ -7,6 +7,10 @@ repositories {
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'com.jamesmurty.utils:java-xmlbuilder:1.1'
+    compile 'com.google.guava:guava:18.0'
+    compile 'org.jetbrains:annotations:13.0'
+    compile 'javax.validation:validation-api:1.1.0.Final'
+    compile 'javax.annotation:jsr250-api:1.0'
 
     testCompile 'junit:junit:4.12'
 }

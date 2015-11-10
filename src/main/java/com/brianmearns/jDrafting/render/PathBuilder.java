@@ -2,6 +2,8 @@ package com.brianmearns.jDrafting.render;
 
 import com.brianmearns.contracts.Reflexive;
 
+import javax.validation.constraints.NotNull;
+
 public interface PathBuilder<R extends Renderer> {
 
     public enum SweepDirection {
@@ -16,7 +18,7 @@ public interface PathBuilder<R extends Renderer> {
      */
     @NotNull
     @Reflexive
-r   public PathBuilder<R> moveTo(double x, double y);
+    public PathBuilder<R> moveTo(double x, double y);
 
     /**
      * Lift the pen and move it by the specified offsets.

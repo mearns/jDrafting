@@ -1,17 +1,20 @@
 package com.brianmearns.jDrafting.render;
 
+import com.brianmearns.contracts.Reflexive;
+import com.brianmearns.jDrafting.Style;
+import com.jamesmurty.utils.XMLBuilder2;
+import org.jetbrains.annotations.Nullable;
+
+import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SvgRenderer implements Renderer {
 
     private static final String svgNamespaceUri = "http://www.w3.org/2000/svg";
 
     @NotNull
-    private final List<Node> nodes;
-
-    public SvgRenderer() {
-        this.nodes = new LinkedList<>();
-    }
+    private final List<Node> nodes = new LinkedList<>();
 
     @NotNull
     @Reflexive
@@ -48,13 +51,13 @@ public class SvgRenderer implements Renderer {
                 .a("cy", String.valueOf(center_y))
                 .a("rx", String.valueOf(radius_x))
                 .a("ry", String.valueOf(radius_y)))
-                .up()
+                .up();
         }
     }
 
     @NotNull
     @Reflexive
-    public SvgRenderer circle(@Nullable Style style, double center_x, double center_y, double_radius)
+    public SvgRenderer circle(@Nullable Style style, double center_x, double center_y, double radius) {
         return add(new CircleNode(style, center_x, center_y, radius));
     }
 
@@ -77,7 +80,7 @@ public class SvgRenderer implements Renderer {
                 .a("cx", String.valueOf(center_x))
                 .a("cy", String.valueOf(center_y))
                 .a("r", String.valueOf(radius)))
-                .up()
+                .up();
         }
     }
 
@@ -89,7 +92,7 @@ public class SvgRenderer implements Renderer {
 
     protected static class LineNode extends AbstractNode {
         private final double sx;
-        private final double sy
+        private final double sy;
         private final double ex;
         private final double ey;
 
@@ -109,7 +112,7 @@ public class SvgRenderer implements Renderer {
                 .a("y1", String.valueOf(sy))
                 .a("x2", String.valueOf(ex))
                 .a("y2", String.valueOf(ey)))
-                .up()
+                .up();
         }
     }
 
@@ -119,11 +122,11 @@ public class SvgRenderer implements Renderer {
     }
 
 
-    protected static class PolyNode extends AbstractNode {
+    protected static abstract class PolyNode extends AbstractNode {
         @NotNull
         private final Point[] points;
 
-        LineNode(@Nullable Style style, @NotNull List<Point> points) {
+        PolyNode(@Nullable Style style, @NotNull List<Point> points) {
             super(style);
             this.points = points.toArray(new Point[points.size()]);
         }
@@ -142,7 +145,11 @@ public class SvgRenderer implements Renderer {
         }
     }
 
-    protected static PolygonNode extends PolyNode {
+    protected static class PolygonNode extends PolyNode {
+        PolygonNode(@Nullable Style style, @NotNull List<Point> points) {
+            super(style, points);
+        }
+
         @NotNull
         @Override
         protected String getTagName() {
@@ -150,7 +157,11 @@ public class SvgRenderer implements Renderer {
         }
     }
 
-    protected static PolylineNode extends PolyNode {
+    protected static class PolylineNode extends PolyNode {
+        PolylineNode(@Nullable Style style, @NotNull List<Point> points) {
+            super(style, points);
+        }
+
         @NotNull
         @Override
         protected String getTagName() {

@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Inherited
 @Retention(RetentionPolicy.CLASS)
-public @interface Reflexive extends Automorphic {
+@Implies(Automorphic.class)
+public @interface Reflexive {
 }
 

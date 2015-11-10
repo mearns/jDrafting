@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Inherited
 @Retention(RetentionPolicy.CLASS)
-public @interface Automorphic extends Endomorphic {
+@Implies(Endomorphic.class)
+public @interface Automorphic {
 }
 
