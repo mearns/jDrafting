@@ -317,7 +317,7 @@ public class SvgRenderer implements Renderer {
 
         @NotNull
         @Reflexive
-        public PathBuilder<R> closePath() {
+        public SvgPathBuilder closePath() {
             data.append(" Z");
         }
 
