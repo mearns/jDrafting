@@ -11,251 +11,200 @@ import java.util.List;
 
 public class SvgRenderer implements Renderer {
 
+    @NotNull
     private static final String svgNamespaceUri = "http://www.w3.org/2000/svg";
 
     @NotNull
-    private final List<Node> nodes = new LinkedList<>();
+    private XMLBuilder2 builder;
+
+    /**
+     * Create a new renderer which will render SVG to the given {@link XMLBuilder2} instance.
+     * This <em>will not</em> add the SVG root element to the builder, so you will be responsible
+     * for doing this yourself. But, in theory, this allows the same builder to be passed to
+     * multiple {@link SvgRenderer} instances in turn.
+     */
+    public SvgRenderer(@NotNull XMLBuilder2 builder) {
+        this.builder = builder;
+    }
+
+    /**
+     * Create a new renderer with a new {@link XMLBuilder2} instance created, using the
+     * fully qualified SVG root element.
+     */
+    public SvgRenderer() {
+        this(XMLBuilder2.create("svg", svgNamespaceUri).namespace("svg", svgNamespaceUri));
+    }
+
 
     @NotNull
-    @Reflexive
-    protected SvgRenderer add(@NotNull Node node) {
-        nodes.add(node);
-        return this;
+    public PathBuilder path(@Nullable Style style) {
+        return new SvgPathBuilder(style);
     }
 
     @NotNull
     @Reflexive
     public SvgRenderer ellipse(@Nullable Style style, double center_x, double center_y, double radius_x, double radius_y) {
-        return add(new EllipseNode(style, center_x, center_y, radius_x, radius_y));
-    }
-
-    protected static class EllipseNode extends AbstractNode {
-        private final double center_x;
-        private final double center_y;
-        private final double radius_x;
-        private final double radius_y;
-
-        EllipseNode(@Nullable Style style, double center_x, double center_y, double radius_x, double radius_y) {
-            super(style);
-            this.center_x = center_x;
-            this.center_y = center_y;
-            this.radius_x = radius_x;
-            this.radius_y = radius_y;
-        }
-
-        @Override
-        @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder) {
-            return super.build(builder.e("ellipse", svgNamespaceUri)
-                .a("cx", String.valueOf(center_x))
-                .a("cy", String.valueOf(center_y))
-                .a("rx", String.valueOf(radius_x))
-                .a("ry", String.valueOf(radius_y)))
-                .up();
-        }
+        builder.element("ellipse", svgNamespaceUri)
+            .a("cx", String.valueOf(center_x))
+            .a("cy", String.valueOf(center_y))
+            .a("rx", String.valueOf(radius_x))
+            .a("ry", String.valueOf(radius_y))
+            .up();
+        return this;
     }
 
     @NotNull
     @Reflexive
     public SvgRenderer circle(@Nullable Style style, double center_x, double center_y, double radius) {
-        return add(new CircleNode(style, center_x, center_y, radius));
-    }
-
-    protected static class CircleNode extends AbstractNode {
-        private final double center_x;
-        private final double center_y;
-        private final double radius;
-
-        CircleNode(@Nullable Style style, double center_x, double center_y, double radius) {
-            super(style);
-            this.center_x = center_x;
-            this.center_y = center_y;
-            this.radius = radius;
-        }
-
-        @Override
-        @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder) {
-            return super.build(builder.e("circle", svgNamespaceUri)
-                .a("cx", String.valueOf(center_x))
-                .a("cy", String.valueOf(center_y))
-                .a("r", String.valueOf(radius)))
-                .up();
-        }
+        builder.element("circle", svgNamespaceUri)
+            .a("cx", String.valueOf(center_x))
+            .a("cy", String.valueOf(center_y))
+            .a("r", String.valueOf(radius))
+            .up();
+        return this;
     }
 
     @NotNull
     @Reflexive
     public SvgRenderer line(@Nullable Style style, double start_x, double start_y, double end_x, double end_y) {
-        return add(new LineNode(style, start_x, start_y, end_x, end_y));
-    }
-
-    protected static class LineNode extends AbstractNode {
-        private final double sx;
-        private final double sy;
-        private final double ex;
-        private final double ey;
-
-        LineNode(@Nullable Style style, double sx, double sy, double ex, double ey) {
-            super(style);
-            this.sx = sx;
-            this.sy = sy;
-            this.ex = ex;
-            this.ey = ey;
-        }
-
-        @Override
-        @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder) {
-            return super.build(builder.e("line", svgNamespaceUri)
-                .a("x1", String.valueOf(sx))
-                .a("y1", String.valueOf(sy))
-                .a("x2", String.valueOf(ex))
-                .a("y2", String.valueOf(ey)))
-                .up();
-        }
+        builder.element("line", svgNamespaceUri)
+            .a("x1", String.valueOf(sx))
+            .a("y1", String.valueOf(sy))
+            .a("x2", String.valueOf(ex))
+            .a("y2", String.valueOf(ey))
+            .up();
+        return this;
     }
 
     @NotNull
-    public PolyBuilder polygon(@Nullable Style style) {
+    public SvgPolygonBuilder polygon(@Nullable Style style) {
         return new SvgPolygonBuilder(style);
     }
 
 
-    protected static abstract class PolyNode extends AbstractNode {
-        @NotNull
-        private final Point[] points;
-
-        PolyNode(@Nullable Style style, @NotNull List<Point> points) {
-            super(style);
-            this.points = points.toArray(new Point[points.size()]);
-        }
-
-        @NotNull
-        protected abstract String getTagName();
-
-        @Override
-        @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder) {
-            StringBuilder attrBuilder = new StringBuilder();
-            for(Point pt : points) {
-                attrBuilder.append(pt.getX()).append(',').append(pt.getY()).append(' ');
-            }
-            return super.build(builder.e(getTagName(), svgNamespaceUri).a("points", attrBuilder.toString()));
-        }
-    }
-
-    protected static class PolygonNode extends PolyNode {
-        PolygonNode(@Nullable Style style, @NotNull List<Point> points) {
-            super(style, points);
-        }
-
-        @NotNull
-        @Override
-        protected String getTagName() {
-            return "polygon";
-        }
-    }
-
-    protected static class PolylineNode extends PolyNode {
-        PolylineNode(@Nullable Style style, @NotNull List<Point> points) {
-            super(style, points);
-        }
-
-        @NotNull
-        @Override
-        protected String getTagName() {
-            return "polyline";
-        }
-    }
-
-
     @NotNull
-    public PolyBuilder polyline(@Nullable Style style) {
+    public SvgPolylineBuilder polyline(@Nullable Style style) {
         return new SvgPolylineBuilder(style);
     }
 
     @NotNull
     @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height);
+    public Renderer rect(@Nullable Style style, double x, double y, double width, double height) {
+        builder.element("line", svgNamespaceUri)
+            .a("x", String.valueOf(x))
+            .a("y", String.valueOf(y))
+            .a("width", String.valueOf(width))
+            .a("height", String.valueOf(height))
+            .up();
+        return this;
+    }
 
     @NotNull
     @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry);
-
-    /**
-     * Start a group into which new elements will be added, until the group is closed.
-     * The style applied to the group is inherited by default by all child elements.
-     *
-     * <p>
-     * The returned object is <em>not</em> necessarily this object, it could be implemented as
-     * a child object. Regardless, use {@link #endGroup()} to exit the group.
-     */
-    @NotNull
-    public Renderer group(@Nullable Style style);
-
-    @NotNull
-    public Renderer group(@Nullable Style style, @Nullable Transformation transformation);
-
-    @NotNull
-    public Renderer group(@Nullable Transformation transformation);
-
-    @NotNull
-    public Renderer endGroup();
+    public Renderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry) {
+        builder.element("line", svgNamespaceUri)
+            .a("x", String.valueOf(x))
+            .a("y", String.valueOf(y))
+            .a("width", String.valueOf(width))
+            .a("height", String.valueOf(height))
+            .a("rx", String.valueOf(rx))
+            .a("ry", String.valueOf(ry))
+            .up();
+        return this;
+    }
 
     @NotNull
     @Reflexive
-    public Renderer text(@Nullable Style, double x, double y, @NotNull String text);
-
-
-
-    protected static interface Node {
-        @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder);
+    public Renderer group(@Nullable Style style) {
+        return group(style, null);
     }
 
-    protected static abstract class AbstractNode {
-        @Nullable
-        private final Style style;
+    @NotNull
+    @Reflexive
+    public Renderer group(@Nullable Style style, @Nullable Transformation transformation) {
+        //TODO: Add transformation
+        builder = builder.element("g", svgNamespaceUri);
+        return this;
+    }
 
-        public AbstractNode(@Nullable Style style) {
-            this.style = style;
-        }
+    @NotNull
+    @Reflexive
+    public Renderer group(@Nullable Transformation transformation) {
+        return group(null, transformation);
+    }
 
-        @Override
+    @NotNull
+    @Reflexive
+    public Renderer endGroup() {
+        builder = builder.up();
+        return this;
+    }
+
+    @NotNull
+    @Reflexive
+    public Renderer text(@Nullable Style style, double x, double y, @NotNull String text) {
+        builder.element("text", svgNamespaceUri)
+            .a("x", String.valueOf(x))
+            .a("y", String.valueOf(y))
+            .t(text)
+            .up();
+        return this;
+    }
+
+
+    public class PointBuilder<B extends SvgPolyBuilder> {
         @NotNull
-        public XMLBuilder2 build(@NotNull XMLBuilder2 builder) {
-            //Assume the element has already been added to the builder in the child class,
-            // we just need to add the attributes for the style to it. Don't go up,
-            // the child class may need to add sub elements.
-            return builder;
+        private final B builder;
+
+        PointBuilder(@NotNull B builder) {
+            this.builder = builder;
         }
 
-        @Nullable
-        public Style getStyle() {
-            return style;
+        @NotNull
+        public PointBuilderX x(double x) {
+            return new PointBuilderX<>(builder, x);
+        }
+
+        @NotNull
+        public PointBuilderY y(double y) {
+            return new PointBuilderY<>(builder, y);
         }
     }
 
-    protected static class Point {
+
+    public class PointBuilderX<B extends SvgPolyBuilder> {
+
+        @NotNull
+        private final B builder;
         private final double x;
+
+        PointBuilderX(@NotNull B builder, double x) {
+            this.builder = builder;
+            this.x = x;
+        }
+
+        public B y(double y) {
+            return this.builder.point(x, y);
+        }
+    }
+
+    public class PointBuilderY<B extends SvgPolyBuilder> {
+
+        @NotNull
+        private final B builder;
         private final double y;
 
-        Point(double x, double y) {
-            this.x = x;
+        PointBuilderY(@NotNull B builder, double y) {
+            this.builder = builder;
             this.y = y;
         }
 
-        public double getX() {
-            return x;
-        }
-
-        public double getY() {
-            return y;
+        public B x(double x) {
+            return this.builder.point(x, y);
         }
     }
 
-    protected abstract class SvgPolyBuilder implements PolyBuilder<SvgRenderer> {
+    protected abstract class SvgPolyBuilder<R extends SvgPolyBuilder<R>> implements PolyBuilder<SvgRenderer> {
 
         @NotNull
         private final List<Point> points = new LinkedList<>();
@@ -273,27 +222,183 @@ public class SvgRenderer implements Renderer {
             points.add(new Point(x, y));
         }
 
+        public PointBuilder<R> point() {
+            return new PointBuilder<>(this);
+        }
+
+        public PointBuilderX<R> x(double x) {
+            return new PointBuilderX<>(this, x);
+        }
+
+        public PointBuilderY<R> y(double y) {
+            return new PointBuilderY<>(this, y);
+        }
+
         @NotNull
         public SvgRenderer endPoly() {
-            return SvgPolyBuilder.this.add(buildNode(points));
+            StringBuilder attrBuilder = new StringBuilder();
+            for(Point pt : points) {
+                attrBuilder.append(pt.getX()).append(',').append(pt.getY()).append(' ');
+            }
+            builder.element(getTagName(), svgNamespaceUri).a("points", attrBuilder.toString());
+            return SvgPolyBuilder.this;
         }
 
         @NotNull
-        protected abstract Node buildNode(@NotNull List<Point> points);
+        protected abstract String getTagName();
+
+        private class Point {
+            private final double x;
+            private final double y;
+
+            Point(double x, double y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            public double getX() {
+                return x;
+            }
+
+            public double getY() {
+                return y;
+            }
+        }
     }
 
-    protected abstract class SvgPolylineBuilder extends SvgPolyBuilder {
+    protected class SvgPolylineBuilder extends SvgPolyBuilder<SvgPolylineBuilder> {
+        SvgPolylineBuilder(@Nullable Style style) {
+            super(style);
+        }
+
+        @Override
         @NotNull
-        protected abstract Node buildNode(@NotNull List<Point> points) {
-            return new PolylineNode(points);
+        protected String getTagName() {
+            return "polyline";
+        }
+
+    }
+
+    protected class SvgPolygonBuilder extends SvgPolyBuilder<SvgPolygonBuilder> {
+        SvgPolygonBuilder(@Nullable Style style) {
+            super(style);
+        }
+
+        @Override
+        @NotNull
+        protected String getTagName() {
+            return "polygon";
         }
     }
 
-    protected abstract class SvgPolygonBuilder extends SvgPolyBuilder {
+    protected class SvgPathBuilder implements PathBuilder<SvgRenderer> {
+        @Nullable
+        private final Style style;
+
         @NotNull
-        protected abstract Node buildNode(@NotNull List<Point> points) {
-            return new PolygonNode(points);
+        private final StringBuilder data;
+
+        SvgPathBuilder(@Nullable Style style) {
+            this.style = style;
+            data = new StringBuilder();
         }
+
+        @NotNull
+        public SvgRenderer endPath() {
+            builder.element("path", svgNamespaceUri).a("d", data.toString()).up();
+            return SvgRenderer.this;
+        }
+
+        @NotNull
+        public SvgRenderer closeAndEndPath() {
+            closePath();
+            return endPath();
+        }
+
+        @NotNull
+        @Reflexive
+        public PathBuilder<R> closePath() {
+            data.append(" Z");
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder moveTo(double x, double y) {
+            data.append(" M").append(x).append(',').append(y);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder move(double dx, double dy) {
+            data.append(" m").append(dx).append(',').append(dy);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder lineTo(double x, double y) {
+            data.append(" L").append(x).append(',').append(y);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder line(double dx, double dy) {
+            data.append(" l").append(dx).append(',').append(dy);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder curveTo(double cx, double cy, double x, double y) {
+            data.append(" Q").append(cx).append(',').append(cy).append(' ').append(x).append(',').append(y);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public PathBuilder<R> curve(double dcx, double dcy, double dx, double dy) {
+            data.append(" q").append(dcx).append(',').append(dcy).append(' ').append(dx).append(',').append(dy);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder curveTo(double c1x, double c1y, double c2x, double c2y, double x, double y) {
+            data.append(" C").append(c1x).append(',').append(c1y).append(' ').append(c2x).append(',').append(c2y).append(' ').append(x).append(',').append(y);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder curve(double dc1x, double dc1y, double dc2x, double dc2y, double dx, double dy) {
+            data.append(" c").append(dc1x).append(',').append(dc1y).append(' ').append(dc2x).append(',').append(dc2y).append(' ').append(dx).append(',').append(dy);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder arcTo(double radiusX, double radiusY, double xAxisRotate, boolean largestArc, SweepDirection sweep, double x, double y) {
+            data.append(" A").append(radiusX).append(' ').append(radiusY)
+                .append(' ').append(xAxisRotate)
+                .append(' ').append(largestArc ? 1 : 0)
+                .append(' ').append(sweep == Clockwise ? 1 : 0)
+                .append(' ').append(x).append(',').append(y);
+            return this;
+        }
+
+        @NotNull
+        @Reflexive
+        public SvgPathBuilder arc(double radiusX, double radiusY, double xAxisRotate, boolean largestArc, SweepDirection sweep, double dx, double dy) {
+            data.append(" a").append(radiusX).append(' ').append(radiusY)
+                .append(' ').append(xAxisRotate)
+                .append(' ').append(largestArc ? 1 : 0)
+                .append(' ').append(sweep == Clockwise ? 1 : 0)
+                .append(' ').append(dx).append(',').append(dy);
+            return this;
+        }
+
     }
 
 }

@@ -101,6 +101,13 @@ public interface PathBuilder<R extends Renderer> {
     public PathBuilder<R> arcTo(double radiusX, double radiusY, double xAxisRotate, boolean largestArc, SweepDirection sweep, double x, double y);
 
     /**
+     * Draws an elliptic curve from the current location to the given point.
+     */
+    @NotNull
+    @Reflexive
+    public PathBuilder<R> arc(double radiusX, double radiusY, double xAxisRotate, boolean largestArc, SweepDirection sweep, double dx, double dy);
+
+    /**
      * Draws a straight line directly from the current location to the starting point of the curve.
      */
     @NotNull
@@ -111,7 +118,6 @@ public interface PathBuilder<R extends Renderer> {
      * Ends the current path, returning the {@link Renderer} from which it originates.
      */
     @NotNull
-    @Reflexive
     public R endPath();
 
     /**
@@ -119,7 +125,6 @@ public interface PathBuilder<R extends Renderer> {
      * to calling {@link #closePath()} followed by {@link #endPath()}.
      */
     @NotNull
-    @Reflexive
     public R closeAndEndPath();
 
 
