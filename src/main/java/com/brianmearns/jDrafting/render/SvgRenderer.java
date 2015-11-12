@@ -4,6 +4,7 @@ import com.brianmearns.contracts.Reflexive;
 import com.brianmearns.jDrafting.Style;
 import com.jamesmurty.utils.XMLBuilder2;
 import org.jetbrains.annotations.Nullable;
+import com.brianmearns.jDrafting.render.PathBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
@@ -68,10 +69,10 @@ public class SvgRenderer implements Renderer {
     @Reflexive
     public SvgRenderer line(@Nullable Style style, double start_x, double start_y, double end_x, double end_y) {
         builder.element("line", svgNamespaceUri)
-            .a("x1", String.valueOf(sx))
-            .a("y1", String.valueOf(sy))
-            .a("x2", String.valueOf(ex))
-            .a("y2", String.valueOf(ey))
+            .a("x1", String.valueOf(start_x))
+            .a("y1", String.valueOf(start_y))
+            .a("x2", String.valueOf(end_x))
+            .a("y2", String.valueOf(end_y))
             .up();
         return this;
     }
@@ -184,7 +185,8 @@ public class SvgRenderer implements Renderer {
         }
 
         public B y(double y) {
-            return this.builder.point(x, y);
+            builder.point(x, y);
+            return builder;
         }
     }
 
@@ -200,11 +202,12 @@ public class SvgRenderer implements Renderer {
         }
 
         public B x(double x) {
-            return this.builder.point(x, y);
+            builder.point(x, y);
+            return builder;
         }
     }
 
-    protected abstract class SvgPolyBuilder<R extends SvgPolyBuilder<R>> implements PolyBuilder<SvgRenderer> {
+    protected abstract class SvgPolyBuilder implements PolyBuilder<SvgRenderer> {
 
         @NotNull
         private final List<Point> points = new LinkedList<>();
@@ -220,17 +223,21 @@ public class SvgRenderer implements Renderer {
         @Reflexive
         public SvgPolyBuilder point(double x, double y) {
             points.add(new Point(x, y));
+            return this;
         }
 
-        public PointBuilder<R> point() {
+        @NotNull
+        public PointBuilder<? extends SvgPolyBuilder> point() {
             return new PointBuilder<>(this);
         }
 
-        public PointBuilderX<R> x(double x) {
+        @NotNull
+        public PointBuilderX<? extends SvgPolyBuilder> x(double x) {
             return new PointBuilderX<>(this, x);
         }
 
-        public PointBuilderY<R> y(double y) {
+        @NotNull
+        public PointBuilderY<? extends SvgPolyBuilder> y(double y) {
             return new PointBuilderY<>(this, y);
         }
 
@@ -241,7 +248,7 @@ public class SvgRenderer implements Renderer {
                 attrBuilder.append(pt.getX()).append(',').append(pt.getY()).append(' ');
             }
             builder.element(getTagName(), svgNamespaceUri).a("points", attrBuilder.toString());
-            return SvgPolyBuilder.this;
+            return SvgRenderer.this;
         }
 
         @NotNull
@@ -266,7 +273,7 @@ public class SvgRenderer implements Renderer {
         }
     }
 
-    protected class SvgPolylineBuilder extends SvgPolyBuilder<SvgPolylineBuilder> {
+    protected class SvgPolylineBuilder extends SvgPolyBuilder {
         SvgPolylineBuilder(@Nullable Style style) {
             super(style);
         }
@@ -277,9 +284,27 @@ public class SvgRenderer implements Renderer {
             return "polyline";
         }
 
+        @Override
+        @NotNull
+        public PointBuilder<SvgPolylineBuilder> point() {
+            return new PointBuilder<>(this);
+        }
+
+        @Override
+        @NotNull
+        public PointBuilderX<SvgPolylineBuilder> x(double x) {
+            return new PointBuilderX<>(this, x);
+        }
+
+        @Override
+        @NotNull
+        public PointBuilderY<SvgPolylineBuilder> y(double y) {
+            return new PointBuilderY<>(this, y);
+        }
+
     }
 
-    protected class SvgPolygonBuilder extends SvgPolyBuilder<SvgPolygonBuilder> {
+    protected class SvgPolygonBuilder extends SvgPolyBuilder {
         SvgPolygonBuilder(@Nullable Style style) {
             super(style);
         }
@@ -288,6 +313,24 @@ public class SvgRenderer implements Renderer {
         @NotNull
         protected String getTagName() {
             return "polygon";
+        }
+
+        @Override
+        @NotNull
+        public PointBuilder<SvgPolygonBuilder> point() {
+            return new PointBuilder<>(this);
+        }
+
+        @Override
+        @NotNull
+        public PointBuilderX<SvgPolygonBuilder> x(double x) {
+            return new PointBuilderX<>(this, x);
+        }
+
+        @Override
+        @NotNull
+        public PointBuilderY<SvgPolygonBuilder> y(double y) {
+            return new PointBuilderY<>(this, y);
         }
     }
 
@@ -319,6 +362,7 @@ public class SvgRenderer implements Renderer {
         @Reflexive
         public SvgPathBuilder closePath() {
             data.append(" Z");
+            return this;
         }
 
         @NotNull
@@ -358,7 +402,7 @@ public class SvgRenderer implements Renderer {
 
         @NotNull
         @Reflexive
-        public PathBuilder<R> curve(double dcx, double dcy, double dx, double dy) {
+        public SvgPathBuilder curve(double dcx, double dcy, double dx, double dy) {
             data.append(" q").append(dcx).append(',').append(dcy).append(' ').append(dx).append(',').append(dy);
             return this;
         }
@@ -383,7 +427,7 @@ public class SvgRenderer implements Renderer {
             data.append(" A").append(radiusX).append(' ').append(radiusY)
                 .append(' ').append(xAxisRotate)
                 .append(' ').append(largestArc ? 1 : 0)
-                .append(' ').append(sweep == Clockwise ? 1 : 0)
+                .append(' ').append(sweep == PathBuilder.SweepDirection.Clockwise ? 1 : 0)
                 .append(' ').append(x).append(',').append(y);
             return this;
         }
@@ -394,7 +438,7 @@ public class SvgRenderer implements Renderer {
             data.append(" a").append(radiusX).append(' ').append(radiusY)
                 .append(' ').append(xAxisRotate)
                 .append(' ').append(largestArc ? 1 : 0)
-                .append(' ').append(sweep == Clockwise ? 1 : 0)
+                .append(' ').append(sweep == PathBuilder.SweepDirection.Clockwise ? 1 : 0)
                 .append(' ').append(dx).append(',').append(dy);
             return this;
         }
