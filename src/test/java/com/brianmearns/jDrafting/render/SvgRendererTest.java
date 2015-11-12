@@ -46,13 +46,12 @@ public class SvgRendererTest {
         return element;
     }
 
-    @Test
-    public void test_ellipse() {
-        SvgRenderer res = renderer.ellipse(null, 10, 5.5, 22.5, 24.25);
-
-        assertSame("Expected ellipse to be reflexive.", renderer, res);
-
-        final XMLBuilder2 builder = res.getBuilder();
+    /**
+     * Verifies the root element is a properly formed SVG element, and returns the document element.
+     */
+    @NotNull
+    protected Element verifySvgDocumentElement() {
+        final XMLBuilder2 builder = renderer.getBuilder();
         assertNotNull("Renderer's builder should not be null.", builder);
 
         //builder.toWriter(new PrintWriter(System.out), null);
@@ -63,17 +62,41 @@ public class SvgRendererTest {
         assertEquals("SVG element should have SVG Namespace for the default namespace (\"xmlns\" attribute).",
             svgNamespaceUri, docEle.lookupNamespaceURI(null));
         assertEquals("SVG element should have SVG Namespace for the \"svg\" xmlns.", svgNamespaceUri, docEle.getAttribute("xmlns:svg"));
-        
-        final NodeList elements = docEle.getElementsByTagNameNS(svgNamespaceUri, "ellipse");
-        assertEquals("SVG element should only have one descendent \"ellipse\" element.", 1, elements.getLength());
+
+        return docEle;
+    }
+
+    /**
+     * After calling {@link verifySvgDocumentElement()}, gets a list of elements with the given tagname, verifies that
+     * there is only one result, and verifies that it has the given attributes.
+     *
+     * <p>
+     * Returns the element in question.
+     */
+    @NotNull Element verifySingleSvgElement(@NotNull String tagName, @NotNull Map<String, Object> attributes) {
+        final Element docEle = verifySvgDocumentElement();
+        final NodeList elements = docEle.getElementsByTagNameNS(svgNamespaceUri, tagName);
+        assertEquals("SVG element should only have one descendent \"" + tagName + "\" element.", 1, elements.getLength());
 
         final Node node = elements.item(0);
-        final Element element = verifySvgElement(node, "ellipse", new ImmutableMap.Builder<String, Object>()
+        assertSame("Element should be a direct child of the root SVG element. Wrong parent found.", docEle, node.getParentNode());
+
+        return verifySvgElement(node, tagName, attributes);
+    }
+
+    @Test
+    public void test_ellipse() {
+        SvgRenderer res = renderer.ellipse(null, 10, 5.5, 22.5, 24.25);
+        assertSame("Expected ellipse to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("ellipse", new ImmutableMap.Builder<String, Object>()
             .put("cx", 10.0)
             .put("cy", 5.5)
             .put("rx", 22.5)
             .put("ry", 24.25)
             .build());
+
+        assertEquals("Ellipse element has wrong number of children.", 0, element.getChildNodes().getLength());
     }
 
 }
