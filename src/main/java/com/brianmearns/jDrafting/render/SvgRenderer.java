@@ -36,6 +36,10 @@ public class SvgRenderer implements Renderer {
         this(XMLBuilder2.create("svg", svgNamespaceUri).namespace("svg", svgNamespaceUri));
     }
 
+    @NotNull
+    public XMLBuilder2 getBuilder() {
+        return builder;
+    }
 
     @NotNull
     public PathBuilder path(@Nullable Style style) {
