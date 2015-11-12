@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -25,9 +26,34 @@ public class SvgRendererTest {
     @NotNull
     private SvgRenderer renderer;
 
+    @NotNull
+    private Random rand;
+
     @Before
     public void setUp() {
         renderer = new SvgRenderer();
+        rand = null;
+    }
+
+    protected void seed(long seed) {
+        rand = new Random(seed);
+    }
+
+    @NotNull
+    protected SvgRenderer getRenderer() {
+        return renderer;
+    }
+
+    @NotNull
+    protected Random getRand() {
+        if(rand == null) {
+            throw new NullPointerException("Random hasn't been initialized yet. Use seed() at the start of the test method.");
+        }
+        return rand;
+    }
+
+    protected double nextDouble() {
+        return Double.MAX_VALUE * getRand().nextDouble();
     }
 
     @NotNull
@@ -86,17 +112,130 @@ public class SvgRendererTest {
 
     @Test
     public void test_ellipse() {
-        SvgRenderer res = renderer.ellipse(null, 10, 5.5, 22.5, 24.25);
+        seed(1);
+        final double cx = nextDouble();
+        final double cy = nextDouble();
+        final double rx = nextDouble();
+        final double ry = nextDouble();
+        SvgRenderer res = renderer.ellipse(null, cx, cy, rx, ry);
         assertSame("Expected ellipse to be reflexive.", renderer, res);
 
         final Element element = verifySingleSvgElement("ellipse", new ImmutableMap.Builder<String, Object>()
-            .put("cx", 10.0)
-            .put("cy", 5.5)
-            .put("rx", 22.5)
-            .put("ry", 24.25)
+            .put("cx", cx)
+            .put("cy", cy)
+            .put("rx", rx)
+            .put("ry", ry)
             .build());
 
         assertEquals("Ellipse element has wrong number of children.", 0, element.getChildNodes().getLength());
+    }
+
+    @Test
+    public void test_circle() {
+        seed(2);
+        final double cx = nextDouble();
+        final double cy = nextDouble();
+        final double radius = nextDouble();
+
+        SvgRenderer res = renderer.circle(null, cx, cy, radius);
+        assertSame("Expected circle to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("circle", new ImmutableMap.Builder<String, Object>()
+            .put("cx", cx)
+            .put("cy", cy)
+            .put("r", radius)
+            .build());
+
+        assertEquals("Circle element has wrong number of children.", 0, element.getChildNodes().getLength());
+    }
+
+    @Test
+    public void test_line() {
+        seed(3);
+        final double sx = nextDouble();
+        final double sy = nextDouble();
+        final double ex = nextDouble();
+        final double ey = nextDouble();
+
+        SvgRenderer res = renderer.line(null, sx, sy, ex, ey);
+        assertSame("Expected line to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("line", new ImmutableMap.Builder<String, Object>()
+            .put("x1", sx)
+            .put("y1", sy)
+            .put("x2", ex)
+            .put("y2", ey)
+            .build());
+
+        assertEquals("Line element has wrong number of children.", 0, element.getChildNodes().getLength());
+    }
+
+    @Test
+    public void test_rect() {
+        seed(4);
+        final double x = nextDouble();
+        final double y = nextDouble();
+        final double width = nextDouble();
+        final double height = nextDouble();
+
+        SvgRenderer res = renderer.rect(null, x, y, width, height);
+        assertSame("Expected rect to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("rect", new ImmutableMap.Builder<String, Object>()
+            .put("x", x)
+            .put("y", y)
+            .put("width", width)
+            .put("height", height)
+            .build());
+
+        assertEquals("Rect element has wrong number of children.", 0, element.getChildNodes().getLength());
+    }
+
+    @Test
+    public void test_rectWithRoundCorners() {
+        seed(5);
+        final double x = nextDouble();
+        final double y = nextDouble();
+        final double width = nextDouble();
+        final double height = nextDouble();
+        final double rx = nextDouble();
+        final double ry = nextDouble();
+
+        SvgRenderer res = renderer.rect(null, x, y, width, height, rx, ry);
+        assertSame("Expected rect to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("rect", new ImmutableMap.Builder<String, Object>()
+            .put("x", x)
+            .put("y", y)
+            .put("width", width)
+            .put("height", height)
+            .put("rx", rx)
+            .put("ry", ry)
+            .build());
+
+        assertEquals("Rect element has wrong number of children.", 0, element.getChildNodes().getLength());
+    }
+    @Test
+    public void test_text() {
+        seed(6);
+        final double x = nextDouble();
+        final double y = nextDouble();
+        final String text = "This is a test string: " + nextDouble();
+
+        SvgRenderer res = renderer.text(null, x, y, text);
+        assertSame("Expected rect to be reflexive.", renderer, res);
+
+        final Element element = verifySingleSvgElement("text", new ImmutableMap.Builder<String, Object>()
+            .put("x", x)
+            .put("y", y)
+            .build());
+
+        assertEquals("Text element has wrong number of children.", 1, element.getChildNodes().getLength());
+
+        final Node textNode = element.getFirstChild();
+        assertEquals("Child of text element should be a text node (" + Node.TEXT_NODE + "). Type is wrong.",
+            Node.TEXT_NODE, textNode.getNodeType());
+        assertEquals("Text element has wrong text child.", text, textNode.getNodeValue());
     }
 
 }

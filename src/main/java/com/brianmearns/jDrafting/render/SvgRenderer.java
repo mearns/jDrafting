@@ -94,8 +94,8 @@ public class SvgRenderer implements Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height) {
-        builder.element("line", svgNamespaceUri)
+    public SvgRenderer rect(@Nullable Style style, double x, double y, double width, double height) {
+        builder.element("rect", svgNamespaceUri)
             .a("x", String.valueOf(x))
             .a("y", String.valueOf(y))
             .a("width", String.valueOf(width))
@@ -106,8 +106,8 @@ public class SvgRenderer implements Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry) {
-        builder.element("line", svgNamespaceUri)
+    public SvgRenderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry) {
+        builder.element("rect", svgNamespaceUri)
             .a("x", String.valueOf(x))
             .a("y", String.valueOf(y))
             .a("width", String.valueOf(width))
@@ -120,13 +120,13 @@ public class SvgRenderer implements Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer group(@Nullable Style style) {
+    public SvgRenderer group(@Nullable Style style) {
         return group(style, null);
     }
 
     @NotNull
     @Reflexive
-    public Renderer group(@Nullable Style style, @Nullable Transformation transformation) {
+    public SvgRenderer group(@Nullable Style style, @Nullable Transformation transformation) {
         //TODO: Add transformation
         builder = builder.element("g", svgNamespaceUri);
         return this;
@@ -134,20 +134,20 @@ public class SvgRenderer implements Renderer {
 
     @NotNull
     @Reflexive
-    public Renderer group(@Nullable Transformation transformation) {
+    public SvgRenderer group(@Nullable Transformation transformation) {
         return group(null, transformation);
     }
 
     @NotNull
     @Reflexive
-    public Renderer endGroup() {
+    public SvgRenderer endGroup() {
         builder = builder.up();
         return this;
     }
 
     @NotNull
     @Reflexive
-    public Renderer text(@Nullable Style style, double x, double y, @NotNull String text) {
+    public SvgRenderer text(@Nullable Style style, double x, double y, @NotNull String text) {
         builder.element("text", svgNamespaceUri)
             .a("x", String.valueOf(x))
             .a("y", String.valueOf(y))
