@@ -29,7 +29,7 @@ public class SvgRendererTest extends RandomTestCase {
     private SvgRenderer renderer;
 
     @Before
-    public void setUp() {
+    public void setUpSvgRendererTest() {
         renderer = new SvgRenderer();
     }
 
@@ -218,6 +218,37 @@ public class SvgRendererTest extends RandomTestCase {
         assertEquals("Child of text element should be a text node (" + Node.TEXT_NODE + "). Type is wrong.",
             Node.TEXT_NODE, textNode.getNodeType());
         assertEquals("Text element has wrong text child.", text, textNode.getNodeValue());
+    }
+
+    @Test
+    public void test_path() {
+        //Arrange
+        seed(7);
+        final double x1 = nextDouble();
+        final double y1 = nextDouble();
+        final double x2 = nextDouble();
+        final double y2 = nextDouble();
+        final double x3 = nextDouble();
+        final double y3 = nextDouble();
+        final double x4 = nextDouble();
+        final double y4 = nextDouble();
+        final SvgRenderer.SvgPathBuilder builder = renderer.path(null);
+
+        //Act
+        builder.moveTo(x1, y1).move(x2, y2).lineTo(x3, y3).line(x4, y4);
+        final SvgRenderer res = builder.endPath();
+
+        //Assert
+        assertSame("Expected builder.endPath() to return the originating renderer.", renderer, res);
+
+        final Element element = verifySingleSvgElement("path", new ImmutableMap.Builder<String, Object>()
+            .put("d",
+                " M" + x1 + ',' + y1
+                + " m" + x2 + ',' + y2
+                + " L" + x3 + ',' + y3
+                + " l" + x4 + ',' + y4
+            )
+            .build());
     }
 
 }
