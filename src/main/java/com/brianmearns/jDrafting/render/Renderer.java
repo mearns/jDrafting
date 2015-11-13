@@ -11,8 +11,8 @@ public interface Renderer {
 
     /**
      * Add a path, which needs to be defined with the given {@link PathBuilder}.
-     * The {@link PathBuilder} can be updated anytime prior to rendering, even if
-     * other rendering methods have been invoked in the mean time.
+     * The path must be defined with the builder before any other renderer methods
+     * are invoked, or the results are undefined.
      */
     @NotNull
     public PathBuilder path(@Nullable Style style);
