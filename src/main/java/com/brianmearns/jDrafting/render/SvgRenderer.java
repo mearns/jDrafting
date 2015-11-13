@@ -42,7 +42,7 @@ public class SvgRenderer implements Renderer {
     }
 
     @NotNull
-    public PathBuilder path(@Nullable Style style) {
+    public SvgPathBuilder path(@Nullable Style style) {
         return new SvgPathBuilder(style);
     }
 

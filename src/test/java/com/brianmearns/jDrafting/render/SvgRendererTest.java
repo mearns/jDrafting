@@ -1,5 +1,7 @@
 package com.brianmearns.jDrafting.render;
 
+import com.brianmearns.jDrafting.testing.RandomTestCase;
+
 import org.junit.Test;
 import org.junit.Before;
 
@@ -19,41 +21,21 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class SvgRendererTest {
+public class SvgRendererTest extends RandomTestCase {
 
     private static final String svgNamespaceUri = "http://www.w3.org/2000/svg";
 
     @NotNull
     private SvgRenderer renderer;
 
-    @NotNull
-    private Random rand;
-
     @Before
     public void setUp() {
         renderer = new SvgRenderer();
-        rand = null;
-    }
-
-    protected void seed(long seed) {
-        rand = new Random(seed);
     }
 
     @NotNull
     protected SvgRenderer getRenderer() {
         return renderer;
-    }
-
-    @NotNull
-    protected Random getRand() {
-        if(rand == null) {
-            throw new NullPointerException("Random hasn't been initialized yet. Use seed() at the start of the test method.");
-        }
-        return rand;
-    }
-
-    protected double nextDouble() {
-        return Double.MAX_VALUE * getRand().nextDouble();
     }
 
     @NotNull
