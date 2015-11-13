@@ -232,10 +232,20 @@ public class SvgRendererTest extends RandomTestCase {
         final double y3 = nextDouble();
         final double x4 = nextDouble();
         final double y4 = nextDouble();
+        final double r1 = nextDouble();
+        final double r2 = nextDouble();
+        final double rot1 = nextDouble();
+        final double x5 = nextDouble();
+        final double y5 = nextDouble();
         final SvgRenderer.SvgPathBuilder builder = renderer.path(null);
 
         //Act
-        builder.moveTo(x1, y1).move(x2, y2).lineTo(x3, y3).line(x4, y4);
+        builder.moveTo(x1, y1).move(x2, y2).lineTo(x3, y3).line(x4, y4)
+            .arcTo(r1, r2, rot1, true, PathBuilder.SweepDirection.Clockwise, x5, y5)
+            .arcTo(r1, r2, rot1, false, PathBuilder.SweepDirection.Clockwise, x5, y5)
+            .arcTo(r1, r2, rot1, true, PathBuilder.SweepDirection.CounterClockwise, x5, y5)
+            .arcTo(r1, r2, rot1, false, PathBuilder.SweepDirection.CounterClockwise, x5, y5)
+            ;
         final SvgRenderer res = builder.endPath();
 
         //Assert
@@ -247,6 +257,10 @@ public class SvgRendererTest extends RandomTestCase {
                 + " m" + x2 + ',' + y2
                 + " L" + x3 + ',' + y3
                 + " l" + x4 + ',' + y4
+                + " A" + r1 + ' ' + r2 + ' ' + rot1 + " 1 1 " + x5 + ',' + y5
+                + " A" + r1 + ' ' + r2 + ' ' + rot1 + " 0 1 " + x5 + ',' + y5
+                + " A" + r1 + ' ' + r2 + ' ' + rot1 + " 1 0 " + x5 + ',' + y5
+                + " A" + r1 + ' ' + r2 + ' ' + rot1 + " 0 0 " + x5 + ',' + y5
             )
             .build());
     }
