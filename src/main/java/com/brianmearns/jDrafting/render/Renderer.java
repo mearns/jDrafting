@@ -2,7 +2,7 @@ package com.brianmearns.jDrafting.render;
 
 import com.brianmearns.contracts.Endomorphic;
 import com.brianmearns.contracts.Reflexive;
-import com.brianmearns.jDrafting.Style;
+import com.brianmearns.jDrafting.art.Style;
 import org.jetbrains.annotations.Nullable;
 
 import javax.validation.constraints.NotNull;
@@ -15,33 +15,33 @@ public interface Renderer {
      * are invoked, or the results are undefined.
      */
     @NotNull
-    public PathBuilder path(@Nullable Style style);
+    PathBuilder path(@Nullable Style style);
 
     @NotNull
     @Reflexive
-    public Renderer ellipse(@Nullable Style style, double center_x, double center_y, double radius_x, double radius_y);
+    Renderer ellipse(@Nullable Style style, double center_x, double center_y, double radius_x, double radius_y);
 
     @NotNull
     @Reflexive
-    public Renderer circle(@Nullable Style style, double center_x, double center_y, double radius);
+    Renderer circle(@Nullable Style style, double center_x, double center_y, double radius);
 
     @NotNull
     @Reflexive
-    public Renderer line(@Nullable Style style, double start_x, double start_y, double end_x, double end_y);
+    Renderer line(@Nullable Style style, double start_x, double start_y, double end_x, double end_y);
 
     @NotNull
-    public PolyBuilder polygon(@Nullable Style style);
+    PolyBuilder polygon(@Nullable Style style);
 
     @NotNull
-    public PolyBuilder polyline(@Nullable Style style);
-
-    @NotNull
-    @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height);
+    PolyBuilder polyline(@Nullable Style style);
 
     @NotNull
     @Reflexive
-    public Renderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry);
+    Renderer rect(@Nullable Style style, double x, double y, double width, double height);
+
+    @NotNull
+    @Reflexive
+    Renderer rect(@Nullable Style style, double x, double y, double width, double height, double rx, double ry);
 
     /**
      * Start a group into which new elements will be added, until the group is closed.
@@ -53,23 +53,23 @@ public interface Renderer {
      */
     @NotNull
     @Endomorphic
-    public Renderer group(@Nullable Style style);
+    Renderer group(@Nullable Style style);
 
     @NotNull
     @Endomorphic
-    public Renderer group(@Nullable Style style, @Nullable Transformation transformation);
+    Renderer group(@Nullable Style style, @Nullable Transformation transformation);
 
     @NotNull
     @Endomorphic
-    public Renderer group(@Nullable Transformation transformation);
+    Renderer group(@Nullable Transformation transformation);
 
     @NotNull
     @Endomorphic
-    public Renderer endGroup();
+    Renderer endGroup();
 
     @NotNull
     @Reflexive
-    public Renderer text(@Nullable Style style, double x, double y, @NotNull String text);
+    Renderer text(@Nullable Style style, double x, double y, @NotNull String text);
 
 }
 

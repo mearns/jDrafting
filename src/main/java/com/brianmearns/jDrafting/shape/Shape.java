@@ -1,10 +1,12 @@
 package com.brianmearns.jDrafting.shape;
 
-import com.brianmearns.jDrafting.render.Renderer;
+import com.brianmearns.jDrafting.art.Stylable;
+import com.brianmearns.jDrafting.art.Renderable;
 
-public interface Shape {
-
-    <R extends Renderer> R render(R renderer);
+/**
+ * A shape is something
+ */
+public interface Shape extends Renderable, Stylable {
 
 }
 

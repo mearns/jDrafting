@@ -1,10 +1,9 @@
 package com.brianmearns.jDrafting.render;
 
 import com.brianmearns.contracts.Reflexive;
-import com.brianmearns.jDrafting.Style;
+import com.brianmearns.jDrafting.art.Style;
 import com.jamesmurty.utils.XMLBuilder2;
 import org.jetbrains.annotations.Nullable;
-import com.brianmearns.jDrafting.render.PathBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
