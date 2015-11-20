@@ -1,4 +1,4 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
@@ -6,16 +6,16 @@ import java.util.Arrays;
 /**
  *
  */
-public class DblMean extends AbstractDbl {
+public class ScalarMean extends AbstractScalar {
 
     @NotNull
-    public final Dbl[] samples;
+    public final Scalar[] samples;
 
-    public DblMean(@NotNull Dbl... samples) throws IllegalArgumentException {
+    public ScalarMean(@NotNull Scalar... samples) throws IllegalArgumentException {
         if(samples.length < 1) {
             throw new IllegalArgumentException("Cannot compute the mean of no values.");
         }
-        for(Dbl sample : samples) {
+        for(Scalar sample : samples) {
             if (sample == null) {
                 throw new NullPointerException("Cannot take the mean of null Dbls.");
             }
@@ -24,19 +24,19 @@ public class DblMean extends AbstractDbl {
     }
 
     @NotNull
-    public static Dbl create(@NotNull Dbl... samples) {
+    public static Scalar create(@NotNull Scalar... samples) {
         switch(samples.length) {
             case 1:
                 return samples[0];
             default:
-                return new DblMean(samples);
+                return new ScalarMean(samples);
         }
     }
 
     public double getValue() {
         double sum = 0;
         //Not null enforced in constructor.
-        for(Dbl sample : samples) {
+        for(Scalar sample : samples) {
             sum += sample.getValue();
         }
         return sum / samples.length;

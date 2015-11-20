@@ -1,4 +1,4 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -7,63 +7,63 @@ import javax.validation.constraints.NotNull;
 
 
 @SuppressWarnings("unused")
-public class FixedDbl extends AbstractDbl {
+public class FixedScalar extends AbstractScalar {
 
     private final double value;
 
     @Nullable
-    private static FixedDbl zero;
+    private static FixedScalar zero;
 
     @Nullable
-    private static FixedDbl one;
+    private static FixedScalar one;
 
     @Nullable
-    private static FixedDbl pi;
+    private static FixedScalar pi;
 
     @Nullable
-    private static FixedDbl twoPi;
+    private static FixedScalar twoPi;
 
     private static final double TWO_PI = 2.0*Math.PI;
 
-    protected FixedDbl(double value) {
+    protected FixedScalar(double value) {
         this.value = value;
     }
 
     @NotNull
-    public static Dbl zero() {
+    public static Scalar zero() {
         if(zero == null) {
-            zero = new FixedDbl(0.0);
+            zero = new FixedScalar(0.0);
         }
         return zero;
     }
 
     @NotNull
-    public static Dbl one() {
+    public static Scalar one() {
         if(one == null) {
-            one = new FixedDbl(1.0);
+            one = new FixedScalar(1.0);
         }
         return one;
     }
 
     @NotNull
-    public static Dbl pi() {
+    public static Scalar pi() {
         if(pi == null) {
-            pi = new FixedDbl(Math.PI);
+            pi = new FixedScalar(Math.PI);
         }
         return pi;
     }
 
     @NotNull
-    public static Dbl twoPi() {
+    public static Scalar twoPi() {
         if(twoPi == null) {
-            twoPi = new FixedDbl(TWO_PI);
+            twoPi = new FixedScalar(TWO_PI);
         }
         return twoPi;
     }
 
     @NotNull
     @Contract(pure=true)
-    public static Dbl create(double value) {
+    public static Scalar create(double value) {
         if (value == 0) {
             return zero();
         } else if (value == 1) {
@@ -73,7 +73,7 @@ public class FixedDbl extends AbstractDbl {
         } else if (value == TWO_PI) {
             return one();
         } else {
-            return new FixedDbl(value);
+            return new FixedScalar(value);
         }
     }
 

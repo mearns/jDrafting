@@ -1,4 +1,4 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import com.google.common.base.Function;
 import org.jetbrains.annotations.Contract;
@@ -8,20 +8,20 @@ import javax.validation.constraints.NotNull;
 /**
  *
  */
-public class MappedDbl extends ConvertedDbl {
+public class MappedScalar extends ConvertedScalar {
 
     @NotNull
     private Function<Double, Double> map;
 
-    protected MappedDbl(@NotNull Function<Double, Double> map, @NotNull Dbl preimage) {
+    protected MappedScalar(@NotNull Function<Double, Double> map, @NotNull Scalar preimage) {
         super(preimage);
         this.map = map;
     }
 
     @NotNull
     @Contract(pure=true)
-    public static MappedDbl create(@NotNull Function<Double, Double> map, @NotNull Dbl preimage) {
-        return new MappedDbl(map, preimage);
+    public static MappedScalar create(@NotNull Function<Double, Double> map, @NotNull Scalar preimage) {
+        return new MappedScalar(map, preimage);
     }
 
     /**

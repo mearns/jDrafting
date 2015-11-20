@@ -1,15 +1,15 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
-public class DblSum extends AbstractDbl {
+public class ScalarSum extends AbstractScalar {
 
     @NotNull
-    public final Dbl[] addends;
+    public final Scalar[] addends;
 
-    public DblSum(@NotNull Dbl... addends) {
-        for(Dbl addend : addends) {
+    public ScalarSum(@NotNull Scalar... addends) {
+        for(Scalar addend : addends) {
             if (addend == null) {
                 throw new NullPointerException("Cannot add null Dbls.");
             }
@@ -18,21 +18,21 @@ public class DblSum extends AbstractDbl {
     }
 
     @NotNull
-    public static Dbl create(@NotNull Dbl... addends) {
+    public static Scalar create(@NotNull Scalar... addends) {
         switch(addends.length) {
             case 0:
-                return Dbl.zero();
+                return Scalar.zero();
             case 1:
                 return addends[0];
             default:
-                return new DblSum(addends);
+                return new ScalarSum(addends);
         }
     }
 
     public double getValue() {
         double sum = 0;
         //Not null enforced in constructor.
-        for(Dbl addend : addends) {
+        for(Scalar addend : addends) {
             sum += addend.getValue();
         }
         return sum;

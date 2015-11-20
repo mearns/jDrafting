@@ -1,4 +1,4 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
@@ -6,13 +6,13 @@ import java.util.Arrays;
 /**
  *
  */
-public class DblProduct extends AbstractDbl {
+public class ScalarProduct extends AbstractScalar {
 
     @NotNull
-    public final Dbl[] multiplicands;
+    public final Scalar[] multiplicands;
 
-    public DblProduct(@NotNull Dbl... multiplicands) {
-        for(Dbl addend : multiplicands) {
+    public ScalarProduct(@NotNull Scalar... multiplicands) {
+        for(Scalar addend : multiplicands) {
             if (addend == null) {
                 throw new NullPointerException("Cannot multiply null Dbls.");
             }
@@ -21,21 +21,21 @@ public class DblProduct extends AbstractDbl {
     }
 
     @NotNull
-    public static Dbl create(@NotNull Dbl... multiplicands) {
+    public static Scalar create(@NotNull Scalar... multiplicands) {
         switch(multiplicands.length) {
             case 0:
-                return Dbl.one();
+                return Scalar.one();
             case 1:
                 return multiplicands[0];
             default:
-                return new DblProduct(multiplicands);
+                return new ScalarProduct(multiplicands);
         }
     }
 
     public double getValue() {
         double product = 1;
         //Not null enforced in constructor.
-        for(Dbl addend : multiplicands) {
+        for(Scalar addend : multiplicands) {
             product *= addend.getValue();
         }
         return product;

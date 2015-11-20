@@ -1,23 +1,23 @@
-package com.brianmearns.jDrafting.geom.dbl;
+package com.brianmearns.jDrafting.geom.scalar;
 
 import javax.validation.constraints.NotNull;
 
 /**
  *
  */
-public abstract class ConvertedDbl extends AbstractDbl {
+public abstract class ConvertedScalar extends AbstractScalar {
 
     @NotNull
-    private Dbl preimage;
+    private Scalar preimage;
 
-    public ConvertedDbl(Dbl preimage) {
+    public ConvertedScalar(Scalar preimage) {
         this.preimage = preimage;
     }
 
     protected abstract double convert(double preimage);
 
     @NotNull
-    public Dbl getPreimage() {
+    public Scalar getPreimage() {
         return preimage;
     }
 
