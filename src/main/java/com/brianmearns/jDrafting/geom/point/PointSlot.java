@@ -11,6 +11,9 @@ public class PointSlot extends AbstractPoint {
     @NotNull
     private Point point;
 
+    @NotNull
+    private Point view;
+
     protected PointSlot(@NotNull Point point) {
         this.point = point;
     }
@@ -41,6 +44,29 @@ public class PointSlot extends AbstractPoint {
     @Override
     public double getY() {
         return point.getY();
+    }
+
+    /**
+     * Returns a read-only view of this point, which is always backed by this point.
+     */
+    @NotNull
+    public Point getView() {
+        if(view == null) {
+            view = new PointSlotView();
+        }
+        return view;
+    }
+
+    protected class PointSlotView extends AbstractPoint {
+        @Override
+        public double getX() {
+            return PointSlot.this.getX();
+        }
+
+        @Override
+        public double getY() {
+            return PointSlot.this.getY();
+        }
     }
 }
 
